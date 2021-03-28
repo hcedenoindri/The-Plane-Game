@@ -3,6 +3,15 @@ html {
   height: 100%;
 }
 body {
-  width: 98%;
-  height: 98%;
+  width: 90%;
+  height: 90%;
+}
+#start-button {
+  transform: translate(200px, 205px);
+  margin: 0px;
+  padding: 0px;
+  width: 200px;
+  height: 170px;
+  position: absolute;
+  clip-path: inset(0px 0px 85px 0px);
 }
