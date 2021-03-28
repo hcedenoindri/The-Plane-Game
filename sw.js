@@ -1,15 +1,17 @@
 
-
 let CACHE_NAME = 'my-site-cache-v1';
 let urlsToCache = [
   '/',
-  '/css/style.css',
-  '/css/simple-sidebar.css',
-  '/js/script.js'
+  '/background.png',
+  '/obstacle.png',
+  '/plane.png',
+  '/start.png',
+  '/script.js',
+  '/style.css'
 ];
 
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', (event) => {
   // Perform install steps
   event.waitUntil(
     cache.open(CACHE_NAME)

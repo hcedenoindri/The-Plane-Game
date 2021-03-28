@@ -60,6 +60,7 @@ let draw_1;
 let draw_2;
 let lives = 3;
 let points = 0;
+let endGame;
 let end_interval;
 
 plane.image.addEventListener("load", () => {
@@ -90,6 +91,17 @@ plane.image.addEventListener("load", () => {
     return distances;
   };
 
+  draw_2 = () => {
+    ctx.font = "bold 50px Courier New";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER!", 300, 100);
+    ctx.fillText("Score: " + parseInt(points), 300, 175);
+    ctx.font = "25px Courier New";
+    start_button.style.transform = "translate(200px, 205px)";
+    start_button.style.clipPath = "inset(0px 0px 85px 0px)";
+    document.body.prepend(start_button);
+  }
+
   let key_1;
   let frames_1 = 0;
   let c_1 = 0;
@@ -99,15 +111,6 @@ plane.image.addEventListener("load", () => {
   let dmg_c = 0;
   obs.y = getRandomInt(280);
   coin.y = getRandomInt(290);
-
-  draw_2 = () => {
-    ctx.font = "bold 50px Courier New";
-    ctx.textAlign = "center";
-    ctx.fillText("GAME OVER!", 300, 100);
-    ctx.fillText("Score: " + parseInt(points), 300, 175);
-    ctx.font = "25px Courier New";
-    ctx.fillText("Refresh your browser to play again!", 300, 275);
-  }
 
   draw_1 = () => {
     frames_1 += 2;
@@ -204,7 +207,7 @@ plane.image.addEventListener("load", () => {
   };
   document.addEventListener("keydown", (event) => {control(event);});
 
-  let endGame = () => {
+  endGame = () => {
     if (lives <= 0) {
       window.cancelAnimationFrame(key_1);
       clearInterval(end_interval);
@@ -212,7 +215,6 @@ plane.image.addEventListener("load", () => {
     }
   };
   
-  end_interval = setInterval(endGame, 2000);
 });
 
 bckg.image.addEventListener("load", () => {
@@ -248,9 +250,14 @@ bckg.image.addEventListener("load", () => {
     setTimeout(() => { 
       start_button.remove();
       window.cancelAnimationFrame(key_0);
+      lives = 3;
+      points = 0;
+      dmg_flag = true;
+      obs.i = 600;
+      coin.i = 600;
+      end_interval = setInterval(endGame, 2000);
       draw_1();
     }, 100);
-
   });
   draw_0();
 });
