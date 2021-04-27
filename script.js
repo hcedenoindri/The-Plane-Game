@@ -60,6 +60,7 @@ let draw_1;
 let draw_2;
 let lives = 3;
 let points = 0;
+let gamma = 0;
 let endGame;
 let end_interval;
 
@@ -164,8 +165,18 @@ plane.image.addEventListener("load", () => {
           coin.y = getRandomInt(290);
         }
       }
-    }
 
+      if (!window.DeviceOrientationEvent) {}
+      else {
+        if (gamma < -75) {
+          plane.y += 3;
+        }
+        if (gamma > -15){
+          plane.y -= 3;
+        }
+      }
+    }
+    
     distances = calc_distance("obs", obs);
     distances.some( (distance) => {
       if (distance <= obs.circle.radius) {
@@ -206,15 +217,9 @@ plane.image.addEventListener("load", () => {
     }
   };
   document.addEventListener("keydown", (event) => {control(event);});
-  
+
   let control2 = (event) => {
-    let gamma = event.gamma;
-    if (gamma < -75) {
-      plane.y += 3;
-    }
-    if (gamma > -15){
-      plane.y -= 3;
-    }
+    gamma = event.gamma;
   };
   if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', (event) => {control2(event)});
@@ -227,8 +232,8 @@ plane.image.addEventListener("load", () => {
       draw_2();
     }
   };
-  
 });
+
 
 bckg.image.addEventListener("load", () => {
   let frames_0 = 0;
@@ -258,9 +263,8 @@ bckg.image.addEventListener("load", () => {
       ctx.fillText("Push the \"START\" button to begin.", 300, 140);
       ctx.fillText("Have fun!", 300, 160);
     }
-    key_0 = window.requestAnimationFrame(draw_0);
-
-  };
+  key_0 = window.requestAnimationFrame(draw_0);
+};
 
   start_button.addEventListener("click", () => {
     start_button.style.transform = "translate(200px, 120px)";
