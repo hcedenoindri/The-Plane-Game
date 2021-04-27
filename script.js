@@ -206,6 +206,19 @@ plane.image.addEventListener("load", () => {
     }
   };
   document.addEventListener("keydown", (event) => {control(event);});
+  
+  let control2 = (event) => {
+    let gamma = event.gamma;
+    if (gamma < -75) {
+      plane.y += 3;
+    }
+    if (gamma > -15){
+      plane.y -= 3;
+    }
+  };
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (event) => {control2(event)});
+  }
 
   endGame = () => {
     if (lives <= 0) {
@@ -235,9 +248,14 @@ bckg.image.addEventListener("load", () => {
       ctx.drawImage(bckg.image, 0, 0, bckg.width, bckg.height, bckg.i, 0, bckg.dx, bckg.dy);
       ctx.fillText("Welcome to The Plane Game!", 300, 30);
       ctx.font = '20px Courier New';
-      ctx.fillText("This game uses W to move up,", 300, 80);
-      ctx.fillText("and S to move down.", 300, 100);  
-      ctx.fillText("Click the \"START\" button to begin.", 300, 140);
+      if (window.DeviceOrientationEvent) {
+        ctx.fillText("Tilt your device to move up and down.", 300, 80);  
+      }
+      else {
+        ctx.fillText("This game uses W to move up,", 300, 80);
+        ctx.fillText("and S to move down.", 300, 100);  
+      }
+      ctx.fillText("Push the \"START\" button to begin.", 300, 140);
       ctx.fillText("Have fun!", 300, 160);
     }
     key_0 = window.requestAnimationFrame(draw_0);
