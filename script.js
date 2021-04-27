@@ -168,15 +168,34 @@ plane.image.addEventListener("load", () => {
 
       if (!window.DeviceOrientationEvent) {}
       else {
-        if (gamma < -75) {
+        if (gamma < -60) {
           plane.y += 3;
         }
-        if (gamma > -15){
+        else if (gamma > -30) {
           plane.y -= 3;
+        }
+        else if (gamma < -70) {
+          plane.y += 5;
+        }
+        else if (gamma > -20) {
+          plane.y -= 5;
+        }
+        else if (gamma < -80) {
+          plane.y += 7;
+        }
+        else if (gamma > -10) {
+          plane.y -= 7;
+        }
+
+        if (plane.y <= 0) {
+          plane.y = 0;
+        }
+        if (plane.y >= 260) {
+          plane.y = 260;
         }
       }
     }
-    
+
     distances = calc_distance("obs", obs);
     distances.some( (distance) => {
       if (distance <= obs.circle.radius) {
