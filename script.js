@@ -60,7 +60,7 @@ let draw_1;
 let draw_2;
 let lives = 3;
 let points = 0;
-let gamma = 0;
+let gamma = -45;
 let endGame;
 let end_interval;
 
