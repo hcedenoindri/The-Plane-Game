@@ -168,23 +168,23 @@ plane.image.addEventListener("load", () => {
 
       if (!window.DeviceOrientationEvent) {}
       else {
-        if (gamma < 300) {
-          plane.y += 3;
-        }
-        else if (gamma > 330) {
-          plane.y -= 3;
-        }
-        else if (gamma < 290) {
+        if (gamma < -60) {
           plane.y += 5;
         }
-        else if (gamma > 340) {
+        else if (gamma > -30) {
           plane.y -= 5;
         }
-        else if (gamma < 280) {
-          plane.y += 7;
+        else if (gamma < -70) {
+          plane.y += 10;
         }
-        else if (gamma > 350) {
-          plane.y -= 7;
+        else if (gamma > -20) {
+          plane.y -= 10;
+        }
+        else if (gamma < -80) {
+          plane.y += 15;
+        }
+        else if (gamma > -10) {
+          plane.y -= 15;
         }
 
         if (plane.y <= 0) {
