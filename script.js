@@ -168,11 +168,14 @@ plane.image.addEventListener("load", () => {
 
       if (!window.DeviceOrientationEvent) {}
       else {
+        let factor = 0;
         if (gamma > -40) {
-          plane.y -= (gamma + 40);
+          factor = parseInt((gamma+40)/3);
+          plane.y -= factor;
         }
         if (gamma < -50) {
-          plane.y -= (gamma + 50);
+          factor = parseInt((gamma+50)/3);
+          plane.y -= factor;
         }
 
         if (plane.y <= 0) {
