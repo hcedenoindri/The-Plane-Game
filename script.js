@@ -3,7 +3,24 @@ let getRandomInt = (max) => {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
+/* Classes and singletons */
 /****************************************************************************/
+class Coin {
+  constructor() {
+    this.image = new Image();
+    this.image.src = "coins.png";
+    this.sprite_w = 47;
+    this.sprite_h = 60;
+    this.sprite_i = 0;
+    this.i = 600;
+    this.x = 0;
+    this.y = getRandomInt(280);
+    this.dx = 47;
+    this.dy = 60;
+    this.circle = {radius: 15, x: 0, y: 0};
+  }
+}
+
 let plane = { 
   image: new Image(),
   move_u: false,
@@ -59,14 +76,17 @@ let coin =  {
 }; coin.image.src = "coins.png";
 
 let game = {
+  is_paused: false,
   lives: 3,
   points: 0,
   imm_timer: 0,
   distances: [],
+  coins: [],
+  obstacles: [],
   start_frame_count: 0,
   start_key: null,
   game_frame_count: 0,
-  game_key: null,
+  key: null,
   over: false
 };
 
@@ -79,8 +99,6 @@ c.height = "350";
 
 /****************************************************************************/
 let start_button = document.querySelector("#start-button");
-let end_interval;
-let key_1;
 let frames_1 = 0;
 let distances = [];
 let imm_timer = 0;
@@ -112,7 +130,7 @@ let calc_distance = (str, obj) => {
 };
 
 /* frames_1, points, is_immune, imm_timer,  */
-let draw_1 = () => {
+let game_scene = () => {
   frames_1 += 2;
   game.points += 0.1;
 
@@ -138,9 +156,11 @@ let draw_1 = () => {
     plane.s_i = plane.s_i == 0 ? 1 : 0;
     bckg.w_i = bckg.w_i == 597 ? 0 : bckg.w_i += 3;
     bckg.i = bckg.i == 3 ? 600 : bckg.i -= 3;
+
     // Move plane if event fired
     if (plane.move_u && plane.y > 0) plane.y -= 10;
     if (plane.move_d && plane.y < 290) plane.y += 10;
+
     // render
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.drawImage(bckg.image, bckg.w_i, 0, bckg.width, bckg.height, 0, 0, bckg.dx, bckg.dy);
@@ -161,6 +181,7 @@ let draw_1 = () => {
         obs.y = getRandomInt(280);
       }
     }
+
     if (frames_1 >= 200) {
       ctx.drawImage(coin.image, coin.s_w*coin.s_i, 0, coin.s_w, coin.s_h, coin.i, coin.y, coin.dx, coin.dy);
       coin.i -= 12;
@@ -174,7 +195,7 @@ let draw_1 = () => {
 
   distances = calc_distance("obs", obs);
   distances.some( (distance) => {
-    if (distance <= obs.circle.radius) {
+    if (distance <= obs.circle.radius && !plane.is_immune) {
       obs.i = 600;
       obs.y = getRandomInt(280);
       plane.is_immune = true;
@@ -184,10 +205,8 @@ let draw_1 = () => {
     }
   });
 
-  if (game.over) {
-    setTimeout(end_game(game.game_key), 1000);
-    return;
-  }
+  if (game.over) 
+    end_game();
 
   distances = calc_distance("coin", coin);
   distances.forEach( (distance) => {
@@ -198,10 +217,11 @@ let draw_1 = () => {
     }
   });
 
-  game.game_key = window.requestAnimationFrame(draw_1);
+  if (!game.over)
+    game.key = window.requestAnimationFrame(game_scene);
 };
 
-let draw_2 = () => {
+let end_scene = () => {
   ctx.font = "bold 50px Courier New";
   ctx.textAlign = "center";
   ctx.fillText("GAME OVER!", 300, 100);
@@ -212,8 +232,22 @@ let draw_2 = () => {
   document.body.prepend(start_button);
 }
 
+let pause_scene = () => {
+  ctx.font = "bold 40px Courier New";
+  ctx.textAlign = "center";
+  ctx.fillText("Game paused", 300, 100);
+  ctx.font = "25px Courier New";
+  ctx.fillText("Press any key to continue...", 300, 200);
+}
+
 let move_plane = (k) => {
+  if (game.is_paused) {
+    resume_game();
+    return;
+  }
   let key = k.which || k.keyCode;
+
+  if (key == 27) pause_game();
   if (key == 87) plane.move_u = true;
   if (key == 83) plane.move_d = true;
 };
@@ -224,20 +258,31 @@ let stop_plane = (k) => {
   plane.move_d = false;
 };
 
-let end_game = (key) => {
-  if (game.lives <= 0) {
-    window.cancelAnimationFrame(key);
-    clearInterval(end_interval);
-    draw_2();
-  }
+let pause_game = () => {
+  window.cancelAnimationFrame(game.key);
+  game.is_paused = true;
+  pause_scene();
+}
+
+let resume_game = () => {
+  game.is_paused = false;
+  setTimeout(game_scene, 100);
+}
+
+let end_game = () => {
+  window.cancelAnimationFrame(game.key);
+  document.removeEventListener("keydown", (event) => {move_plane(event);});
+  document.removeEventListener("keyup", (event) => {stop_plane(event);});
+  end_scene();
 };
+
 /****************************************************************************/
 
 /* START SCREEN */
 /****************************************************************************/
 let frames_0 = 0;
 let key_0;
-let start_screen = () => {
+let start_scene = () => {
   frames_0 += 2;
   if (frames_0%10 == 0) {
     // calculate
@@ -257,22 +302,28 @@ let start_screen = () => {
     ctx.fillText("Push the \"START\" button to begin.", 300, 140);
     ctx.fillText("Have fun!", 300, 160);
   }
-  key_0 = window.requestAnimationFrame(start_screen);
+  key_0 = window.requestAnimationFrame(start_scene);
 };
 
+
+/* EVENT LISTENERS */
+/****************************************************************************/
 start_button.addEventListener("click", () => {
   start_button.style.transform = "translate(200px, 120px)";
   start_button.style.clipPath = "inset(85px 0px 0px 0px)";
+
   setTimeout(() => { 
     start_button.remove();
     window.cancelAnimationFrame(key_0);
-    // end_interval = setInterval(end_game, 2000);
     document.addEventListener("keydown", (event) => {move_plane(event);});
     document.addEventListener("keyup", (event) => {stop_plane(event);});
-    draw_1();
+    game.over = false;
+    game.points = 0;
+    game.lives = 3;
+    game_scene();
   }, 100);
 });
 
 bckg.image.addEventListener("load", () => {
-  start_screen();
+  start_scene();
 });
